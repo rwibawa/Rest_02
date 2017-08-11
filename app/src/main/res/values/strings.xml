@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Rest_02</string>
+    <string name="button_greeting_label">Greeting</string>
+    <string name="textView_name_text">your name</string>
+    <string name="id_label">id:</string>
+    <string name="id_value">[id]</string>
+    <string name="content_label">content:</string>
+    <string name="content_value">[content]</string>
+</resources>
