@@ -8,8 +8,19 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,10 +48,40 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Greeting doInBackground(Void... params) {
             try {
-                final String url = "http://192.168.1.107:8080/greeting?name=" + name;
+                String url = "http://192.168.1.128:8094/oauth/token";
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-                Greeting greeting = restTemplate.getForObject(url, Greeting.class);
+                restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
+
+                HttpHeaders headers = new HttpHeaders();
+//                String basicToken = new String(Base64.encodedBase64(("acme:acmesecret").getBytes()));
+                headers.set("Authorization", "Basic YWNtZTphY21lc2VjcmV0");
+                headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+                MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+                form.add("grant_type", "password");
+                form.add("username", "rwibawa");
+                form.add("password", "Ch@ng3M3!");
+
+                HttpEntity formEncodedRequest = new HttpEntity(form, headers);
+
+                // get token
+                AccessToken token = restTemplate.postForObject(url, formEncodedRequest,
+                        AccessToken.class, new Object[0]);
+
+                url = "http://192.168.1.128:8094/greeting?name=" + URLEncoder.encode(name);
+                String bearerToken = token.getToken_type() + " " + token.getAccess_token();
+//                headers = new HttpHeaders();
+//                headers.set("Authorization", bearerToken);
+//
+//                formEncodedRequest = new HttpEntity(headers);
+                Map<String, String> header = new LinkedHashMap<>();
+                header.put("Authorization", bearerToken);
+
+                restTemplate = new RestTemplate();
+                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+                Greeting greeting = restTemplate.getForObject(url, Greeting.class, header);
+
                 return greeting;
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
@@ -53,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Greeting greeting) {
             TextView greetingIdText = (TextView) findViewById(R.id.id_value);
             TextView greetingContentText = (TextView) findViewById(R.id.content_value);
-            greetingIdText.setText(greeting.getId());
+            greetingIdText.setText(String.valueOf(greeting.getId()));
             greetingContentText.setText(greeting.getContent());
         }
 

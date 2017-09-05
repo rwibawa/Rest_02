@@ -82,3 +82,13 @@ dependencies {
         new HttpRequestTask(name).execute();
     }
 ```
+
+## 6. Clean up before build
+```bash
+$ rm -rf .gradle ./build ./app/build
+```
+
+## 7. Oauth2
+Refer to [spring-boot-07](https://github.com/rwibawa/spring-boot-07) as the back-end services.
+
+The `lombok.config` is the configuration file for _lombok_ plugin.
