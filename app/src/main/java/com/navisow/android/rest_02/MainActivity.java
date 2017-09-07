@@ -10,12 +10,15 @@ import android.widget.TextView;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.net.URLEncoder;
@@ -69,20 +72,22 @@ public class MainActivity extends AppCompatActivity {
                 AccessToken token = restTemplate.postForObject(url, formEncodedRequest,
                         AccessToken.class, new Object[0]);
 
-                url = "http://192.168.1.128:8094/greeting?name=" + URLEncoder.encode(name);
                 String bearerToken = token.getToken_type() + " " + token.getAccess_token();
-//                headers = new HttpHeaders();
-//                headers.set("Authorization", bearerToken);
-//
-//                formEncodedRequest = new HttpEntity(headers);
-                Map<String, String> header = new LinkedHashMap<>();
-                header.put("Authorization", bearerToken);
+                headers = new HttpHeaders();
+                headers.set("Authorization", bearerToken);
 
-                restTemplate = new RestTemplate();
-                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-                Greeting greeting = restTemplate.getForObject(url, Greeting.class, header);
+                formEncodedRequest = new HttpEntity(headers);
+                url = "http://192.168.1.128:8094/greeting";
+                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+                        .queryParam("name", name); // URLEncoder.encode(name, "UTF-8")
 
-                return greeting;
+//                Greeting greeting = restTemplate.getForObject(url, Greeting.class, header);
+                ResponseEntity<Greeting> response = restTemplate.exchange(
+                        builder.build().encode().toUri(),
+                        HttpMethod.GET, formEncodedRequest, Greeting.class);
+
+                return response.getBody();
+
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
             }
