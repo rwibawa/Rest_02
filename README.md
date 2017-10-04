@@ -92,3 +92,51 @@ $ rm -rf .gradle ./build ./app/build
 Refer to [spring-boot-07](https://github.com/rwibawa/spring-boot-07) as the back-end services.
 
 The `lombok.config` is the configuration file for _lombok_ plugin.
+
+## 8. Gradle
+[Gradle guide](https://github.com/codepath/android_guides/wiki/Getting-Started-with-Gradle#upgrading-gradle)
+
+### Check dependencies
+```bash
+$ ./gradlew androidDependencies
+```
+
+### Check info
+```bash
+$ ./gradlew -v
+
+------------------------------------------------------------
+Gradle 3.3
+------------------------------------------------------------
+
+Build time:   2017-01-03 15:31:04 UTC
+Revision:     075893a3d0798c0c1f322899b41ceca82e4e134b
+
+Groovy:       2.4.7
+Ant:          Apache Ant(TM) version 1.9.6 compiled on June 29 2015
+JVM:          1.8.0_101 (Oracle Corporation 25.101-b13)
+OS:           Mac OS X 10.12.6 x86_64
+```
+
+### Build APK
+```bash
+$ ./gradlew assemble
+
+$ ./gradlew clean
+$ ./gradlew build
+```
+
+### Speeding up Gradle Builds, set it in `gradle.properties`:
+```
+#Enable daemon
+org.gradle.daemon=true
+
+# Try and findout the best heap size for your project build.
+org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+
+# Modularise your project and enable parallel build
+org.gradle.parallel=true
+
+# Enable configure on demand.
+org.gradle.configureondemand=true
+```
