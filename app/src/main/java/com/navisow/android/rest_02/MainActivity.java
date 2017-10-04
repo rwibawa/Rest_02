@@ -20,11 +20,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
-import java.net.URLEncoder;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -51,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Greeting doInBackground(Void... params) {
             try {
-                String url = "http://192.168.1.128:8094/oauth/token";
+                String url = "https://desolate-badlands-25220.herokuapp.com/oauth/token";
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
@@ -77,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 headers.set("Authorization", bearerToken);
 
                 formEncodedRequest = new HttpEntity(headers);
-                url = "http://192.168.1.128:8094/greeting";
+                url = "https://desolate-badlands-25220.herokuapp.com/greeting";
                 UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
                         .queryParam("name", name); // URLEncoder.encode(name, "UTF-8")
 
