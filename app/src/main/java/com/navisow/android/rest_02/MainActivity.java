@@ -22,6 +22,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -51,13 +55,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected Greeting doInBackground(Void... params) {
             try {
-                String url = "https://desolate-badlands-25220.herokuapp.com/oauth/token";
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
                 restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
 
-                AccessToken token = getAccessToken(url, restTemplate);
+                AccessToken token = getAccessToken(restTemplate);
                 Greeting greeting = getGreeting(restTemplate, token);
+
                 return greeting;
 
             } catch (Exception e) {
@@ -85,7 +89,8 @@ public class MainActivity extends AppCompatActivity {
             return response.getBody();
         }
 
-        private AccessToken getAccessToken(String url, RestTemplate restTemplate) {
+        private AccessToken getAccessToken(RestTemplate restTemplate) {
+            String url = "https://desolate-badlands-25220.herokuapp.com/oauth/token";
 
             Context context = getBaseContext();
             String tokenName = getString(R.string.access_token);
@@ -140,6 +145,16 @@ public class MainActivity extends AppCompatActivity {
             TextView greetingContentText = (TextView) findViewById(R.id.content_value);
             greetingIdText.setText(String.valueOf(greeting.getId()));
             greetingContentText.setText(greeting.getContent());
+
+            try {
+                Context context = getBaseContext();
+                File file = File.createTempFile("greetings.txt", null, context.getCacheDir());
+                FileOutputStream stream = new FileOutputStream(file, true);
+                stream.write(greeting.getContent().getBytes());
+                stream.close();
+            } catch (IOException e) {
+                Log.e("MainActivity", e.getMessage(), e);
+            }
         }
 
     }
