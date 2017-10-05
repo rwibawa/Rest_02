@@ -140,3 +140,6 @@ org.gradle.parallel=true
 # Enable configure on demand.
 org.gradle.configureondemand=true
 ```
+
+## 9. Saving Data
+* Saving Key-Value Data in the Activity Preferences.
